@@ -1,8 +1,8 @@
-import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Res} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Post} from "@nestjs/common";
 import {UrlService} from "./url.service";
 import {CreateUrlDto} from "./dto/createUrl.dto";
 import {UrlDto} from "./dto/url.dto";
-import {Response} from "express";
+
 
 @Controller()
 export class UrlController {
@@ -11,12 +11,13 @@ export class UrlController {
 
     @Post()
     async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlDto> {
+        console.log(createUrlDto)
         return this.urlService.createUrl(createUrlDto);
     }
 
     @Get('/:code')
-    async get(@Res() res: Response, @Param('code') code: string) {
-        res.redirect(HttpStatus.FOUND, await this.urlService.findUrl(code));
+    async get(@Param('code') code: string) : Promise<string> {
+        return this.urlService.findUrl(code);
     }
 
     @Delete('/:code')
