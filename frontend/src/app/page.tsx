@@ -3,8 +3,10 @@
 import {useForm} from "@tanstack/react-form";
 import axios from "axios";
 import {useState} from "react";
-import LinkCard from "@/components/LinkCard";
+import LinkCard from "@/app/components/LinkCard";
 import {usePathname} from "next/navigation";
+import {Toaster} from "react-hot-toast";
+
 
 export default function Home() {
     const [links, setLinks] = useState<{ originalLink: string, shortenLink: string }[]>([])
@@ -39,11 +41,12 @@ export default function Home() {
     })
 
     return (
-        <main>
-            <h1>Link Shortener </h1>
-            <section>
-                <h2>Paste the URL to be shortened</h2>
-                <form onSubmit={(event) => {
+        <main className={"flex flex-col justify-center items-center gap-2"}>
+            <Toaster/>
+            <h1 className={"font-bold text-blue-500 text-5xl text-shadow-sm text-shadow-gray-300 m-6"}>Link Shortener </h1>
+            <section className={"w-[750px] bg-white rounded-md shadow-xl shadow-gray-200 p-2"}>
+                <h2 className={"font-bold text-gray-500 text-3xl m-2 text-center"}>Paste the URL to be shortened</h2>
+                <form className={"flex flex-row justify-center items-center"} onSubmit={(event) => {
                     event.preventDefault()
                     event.stopPropagation()
                     form.handleSubmit().catch(console.error);
@@ -55,6 +58,7 @@ export default function Home() {
                             // shadcn/ui
                             <>
                                 <input
+                                    className={"w-4/5 pl-4 border border-gray-300 rounded-l-md m-6 mr-0 ml-0 h-14 placeholder:p-4"}
                                     id={field.name}
                                     name={field.name}
                                     value={field.state.value}
@@ -65,10 +69,10 @@ export default function Home() {
                             </>
                         )
                     }</form.Field>
-                    <button type={"submit"}>Submit</button>
+                    <button className={"p-2 text-white h-14 rounded-r-md bg-blue-500 text-center shadow-md shadow-blue-500 transition-shadow hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-600"} type={"submit"}>Shorten Url</button>
                 </form>
             </section>
-            <section>
+            <section className={"flex flex-col gap-2"}>
                 {linkComponents}
             </section>
         </main>

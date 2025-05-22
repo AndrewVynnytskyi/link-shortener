@@ -29,7 +29,7 @@ export default function RedirectionPage() {
         redirectionFunc().then((res) => router.replace(res?.data)).catch((e)=> console.error(e))
     }, [])
 
-    return null;
+    return (<p>Redirecting...</p>);
 
 
 }
