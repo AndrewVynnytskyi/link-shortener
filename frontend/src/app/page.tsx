@@ -5,14 +5,14 @@ import axios from "axios";
 import {useState} from "react";
 import LinkCard from "@/app/components/LinkCard";
 import {usePathname} from "next/navigation";
-import {Toaster} from "react-hot-toast";
+import {toast, Toaster} from "react-hot-toast";
 
 
 export default function Home() {
     const [links, setLinks] = useState<{ originalLink: string, shortenLink: string }[]>([])
-    const linkComponents = links.map((link, i) => {
-        return <LinkCard key={i} originalLink={link.originalLink} shortenLink={link.shortenLink}/>
-    })
+
+
+
     const pathname = usePathname();
     const form = useForm({
         defaultValues: {
@@ -38,6 +38,18 @@ export default function Home() {
             }
 
         },
+    })
+
+    async function handleDelete(shortenLink:string){
+        await axios({
+            method:"delete",
+            url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`
+        }).then(() => toast.success("Successfully deleted")).catch((e) => toast.error("Error" + e));
+        setLinks(links.filter(value => value.shortenLink !== shortenLink))
+    }
+
+    const linkComponents = links.map((link, i) => {
+        return <LinkCard key={i} originalLink={link.originalLink} shortenLink={link.shortenLink} handleDelete={() => handleDelete(link.shortenLink)}/>
     })
 
     return (
