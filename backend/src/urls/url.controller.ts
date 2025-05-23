@@ -11,13 +11,17 @@ export class UrlController {
 
     @Post()
     async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlDto> {
-        console.log(createUrlDto)
         return this.urlService.createUrl(createUrlDto);
     }
 
     @Get('/:code')
-    async get(@Param('code') code: string) : Promise<string> {
+    async getLinkRedirection(@Param('code') code: string): Promise<string> {
         return this.urlService.findUrl(code);
+    }
+
+    @Get('/user/:userid/:page')
+    async getAllUserLinks(@Param('userid') userId: string, @Param('page') page: number):Promise<UrlDto[]>{
+        return this.urlService.getAllUsersUrL(userId, page)
     }
 
     @Delete('/:code')

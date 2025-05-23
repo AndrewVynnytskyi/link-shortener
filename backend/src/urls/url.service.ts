@@ -17,6 +17,7 @@ export class UrlService {
             url: createUrlDto.originalUrl,
             shortUrl: shortUrl,
             clicks: 0,
+            userId: createUrlDto.userId
         });
     }
 
@@ -28,6 +29,23 @@ export class UrlService {
         urls.clicks++;
         await urls.save();
         return urls.url;
+    }
+
+    async getAllUsersUrL(userId: string, pages: number): Promise<UrlDto[]> {
+        const urls = await this.UrlModel
+            .find({userId})
+            .sort({createdAt: -1})
+            .skip(pages * 20)
+            .limit(20)
+            .exec();
+        if (!urls) {
+            throw new NotFoundException("The url not found")
+        }
+        return urls.map((url) => ({
+            url:url.url,
+            shortUrl: url.shortUrl,
+            clicks:url.clicks
+        }))
     }
 
     async deleteUrl(shortUrl: string) {
