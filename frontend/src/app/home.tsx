@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import { use, useEffect, useState } from 'react';
 import {usePathname} from "next/navigation";
 import {useForm} from "@tanstack/react-form";
 import axios from "axios";
@@ -8,6 +8,7 @@ import {getCookie, setCookie} from "typescript-cookie";
 import {nanoid} from "nanoid";
 import {toast, Toaster} from "react-hot-toast";
 import LinkCard from "@/app/components/LinkCard";
+import PagComp from '@/app/components/PagComp';
 
 
 type Link = {
@@ -16,8 +17,15 @@ type Link = {
     clicks: number
 }
 
-export default function Home({data}: { data: Link[] }) {
-    const [links, setLinks] = useState<Link[]>(data)
+type Links = {
+    total:number,
+    urls: Link[]
+}
+
+export default function Home({data}: { data: Links }) {
+    const [links, setLinks] = useState<Link[]>(data.urls)
+    const [total, setTotal] = useState<number>(data.total)
+    const [page, setPage] = useState<number>(0);
     const pathname = usePathname();
     const [userId, setUserId] = useState<string | undefined>();
     const form = useForm({
@@ -38,8 +46,11 @@ export default function Home({data}: { data: Link[] }) {
                 )
 
                 console.log(res.data);
-                setLinks(prev => [...prev,
-                    {url: res.data.url, shortUrl: res.data.shortUrl, clicks: res.data.clicks}])
+                if(page === 0){
+                    setLinks(prev => [
+                        {url: res.data.url, shortUrl: res.data.shortUrl, clicks: res.data.clicks}, ...prev]);
+                }
+                setTotal(prev => prev + 1);
 
             } catch (e) {
                 console.error(e)
@@ -69,6 +80,18 @@ export default function Home({data}: { data: Link[] }) {
         setLinks(links.filter(value => pathname + value.shortUrl !==  shortenLink))
 
     }
+
+    async function onPageChange(event: { selected: any; }){
+        setPage(event.selected);
+        const res = await axios({
+            method:"get",
+            url: process.env.NEXT_PUBLIC_API_KEY +  `/user/${userId}/${event.selected}`
+        });
+        setLinks(res.data.urls);
+
+    }
+
+
 
     const linkComponents = links.map((link, i) => {
         return <LinkCard key={i} originalLink={link.url} shortenLink={pathname + link.shortUrl}
@@ -112,7 +135,7 @@ export default function Home({data}: { data: Link[] }) {
                 </form>
             </section>
             <section className={"flex flex-col gap-2"}>
-                {linkComponents}
+                <PagComp currentItems={linkComponents} pageCount={Math.ceil(total/10)}  onPageChange={onPageChange}/>
             </section>
         </main>
     );

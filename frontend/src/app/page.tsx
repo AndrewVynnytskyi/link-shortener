@@ -7,7 +7,7 @@ export default async function Page() {
     const cookieStorage = await cookies()
     const userId = cookieStorage.get("userId") || null;
     if (!userId) {
-        return (<Home data={[]}/>)
+        return (<Home data={{total:0, urls: []}}/>)
     }
     try {
         const res = await axios({
@@ -19,6 +19,6 @@ export default async function Page() {
         console.error(e);
 
     }
-    return (<Home data={[]}/>)
+    return (<Home data={{total:0, urls: []}}/>)
 }
 

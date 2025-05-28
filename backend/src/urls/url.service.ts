@@ -31,21 +31,24 @@ export class UrlService {
         return urls.url;
     }
 
-    async getAllUsersUrL(userId: string, pages: number): Promise<UrlDto[]> {
+    async getAllUsersUrL(userId: string, pages: number): Promise<any> {
         const urls = await this.UrlModel
             .find({userId})
             .sort({createdAt: -1})
-            .skip(pages * 20)
-            .limit(20)
+            .skip(pages * 10)
+            .limit(10)
             .exec();
+        const total = await this.UrlModel.find({userId}).countDocuments().exec();
         if (!urls) {
             throw new NotFoundException("The url not found")
         }
-        return urls.map((url) => ({
-            url:url.url,
-            shortUrl: url.shortUrl,
-            clicks:url.clicks
-        }))
+        return {
+            total: total,
+            urls: urls.map((url) => ({
+                url:url.url,
+                shortUrl: url.shortUrl,
+                clicks:url.clicks
+        }))}
     }
 
     async deleteUrl(shortUrl: string) {
