@@ -1,5 +1,6 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {HydratedDocument} from "mongoose";
+import { IsEmail } from 'class-validator';
 
 export type AuthDocument = HydratedDocument<Auth>;
 
@@ -9,6 +10,9 @@ export class Auth{
     username:string
     @Prop()
     password:string
+    @Prop()
+    @IsEmail()
+    email: string
 }
 
 export const AuthSchema =  SchemaFactory.createForClass(Auth);

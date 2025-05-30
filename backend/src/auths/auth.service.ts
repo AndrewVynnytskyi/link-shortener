@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Auth } from './schema/auth.schema';
 import { JwtService } from '@nestjs/jwt';
 import { compare, genSalt, hash } from 'bcrypt-ts';
+import { LoginDto } from './dto/login.dto';
 
 
 @Injectable()
@@ -22,16 +23,20 @@ export class AuthService {
       {
         username: authDto.username,
         password: await hash(authDto.password, await genSalt(10)),
+        email: authDto.email,
       },
     );
   }
 
-  async validateUser(authDto: AuthDto): Promise<string | null> {
-    const user = await this.AuthModel.findOne({ username: authDto.username });
+  async validateUser(loginDto: LoginDto): Promise<string | null> {
+    const user = await this.AuthModel.findOne({
+      $or: [{ username: loginDto.login },
+        { email: loginDto.login }],
+    });
     if (!user) {
       return null;
     }
-    if (await compare(authDto.password, user.password)) {
+    if (await compare(loginDto.password, user.password)) {
       const { password, ...buffUser } = user;
       return this.jwtService.sign(buffUser);
     }
