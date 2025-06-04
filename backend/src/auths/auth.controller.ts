@@ -5,11 +5,9 @@ import { JwtGuard } from './guards/jwt.guard';
 import { Request } from 'express';
 import { AuthDto } from './dto/auth.dto';
 
-
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
   async signUp(@Body() authDto: AuthDto) {
@@ -25,6 +23,6 @@ export class AuthController {
   @Get('status')
   @UseGuards(JwtGuard)
   async status(@Req() req: Request): Promise<Express.User | undefined> {
-    return (req.user);
+    return req.user;
   }
 }

@@ -5,24 +5,28 @@ import { z } from "zod";
 import axios from "axios";
 
 type UrlShortSectionProps = {
-  userId: string | undefined,
-  page: number,
-  setLinks: any,
-  setTotal: any
-}
+  userId: string | undefined;
+  page: number;
+  setLinks: any;
+  setTotal: any;
+};
 
 type UrlFormFieldsName = "link";
 
-export default function UrlShortSection({ userId, page, setLinks, setTotal }: UrlShortSectionProps) {
-
+export default function UrlShortSection({
+  userId,
+  page,
+  setLinks,
+  setTotal,
+}: UrlShortSectionProps) {
   const form = useForm({
     defaultValues: {
-      link: ""
+      link: "",
     },
     validators: {
       onChange: z.object({
-        link: z.string().url("You have to paste valid url")
-      })
+        link: z.string().url("You have to paste valid url"),
+      }),
     },
     onSubmit: async ({ value }) => {
       try {
@@ -31,8 +35,8 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
           url: process.env.NEXT_PUBLIC_API_KEY,
           data: {
             originalUrl: value.link,
-            userId: userId
-          }
+            userId: userId,
+          },
         });
 
         console.log(res.data);
@@ -41,16 +45,16 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
             {
               url: res.data.url,
               shortUrl: res.data.shortUrl,
-              clicks: res.data.clicks
+              clicks: res.data.clicks,
             },
-            ...prev
+            ...prev,
           ]);
         }
         setTotal((prev: number) => prev + 1);
       } catch (e) {
         console.error(e);
       }
-    }
+    },
   });
 
   const urlFormData: {
@@ -61,37 +65,40 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
     {
       name: "link",
       placeholder: "Enter the link here",
-      type: "url"
-    }
+      type: "url",
+    },
   ];
 
   const urlFormComponents = urlFormData.map(
     ({ name, placeholder, type }, i) => (
       <form.Field key={i} name={name}>
         {(field) => (
-          <InputField className={{
-            sectionClassName: "w-4/5 pt-3 mb-6",
-            inputClassName: "w-full rounded-l-md mt-6 mr-0 ml-0",
-            errorClassName: "mb-9"
-          }} field={field} placeholder={placeholder} type={type} />
+          <InputField
+            className={{
+              sectionClassName: "mb-6 w-4/5 pt-3",
+              inputClassName: "mt-6 mr-0 ml-0 w-full rounded-l-md",
+              errorClassName: "mb-9",
+            }}
+            field={field}
+            placeholder={placeholder}
+            type={type}
+          />
         )}
       </form.Field>
-    )
+    ),
   );
 
   return (
     <section
-      className={
-        "w-[750px] rounded-md bg-white p-2 shadow-xl shadow-gray-200"
-      }
+      className={"w-[750px] rounded-md bg-white p-2 shadow-xl shadow-gray-200"}
     >
-      <h2 className={"m-2 text-center text-3xl font-bold text-gray-500 mb-0"}>
+      <h2 className={"m-2 mb-0 text-center text-3xl font-bold text-gray-500"}>
         Paste the URL to be shortened
       </h2>
       <Form
         className={{
-          formClassName: "flex flex-row items-center justify-center ",
-          submitButtonClassName: "rounded-r-md"
+          formClassName: "flex flex-row items-center justify-center",
+          submitButtonClassName: "rounded-r-md",
         }}
         formComponents={urlFormComponents}
         form={form}
@@ -99,5 +106,4 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
       />
     </section>
   );
-
 }

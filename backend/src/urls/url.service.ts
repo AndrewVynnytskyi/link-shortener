@@ -1,57 +1,56 @@
-import {Injectable, NotFoundException} from "@nestjs/common";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {nanoid} from "nanoid";
-import {Url} from "./schemas/url.schema";
-import {UrlDto} from "./dto/url.dto";
-import {CreateUrlDto} from "./dto/createUrl.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { nanoid } from 'nanoid';
+import { Url } from './schemas/url.schema';
+import { UrlDto } from './dto/url.dto';
+import { CreateUrlDto } from './dto/createUrl.dto';
 
 @Injectable()
 export class UrlService {
-    constructor(@InjectModel(Url.name) private UrlModel: Model<Url>) {
-    }
+  constructor(@InjectModel(Url.name) private UrlModel: Model<Url>) {}
 
-    async createUrl(createUrlDto: CreateUrlDto): Promise<UrlDto> {
-        const shortUrl = nanoid(15);
-        return await this.UrlModel.create({
-            url: createUrlDto.originalUrl,
-            shortUrl: shortUrl,
-            clicks: 0,
-            userId: createUrlDto.userId
-        });
-    }
+  async createUrl(createUrlDto: CreateUrlDto): Promise<UrlDto> {
+    const shortUrl = nanoid(15);
+    return await this.UrlModel.create({
+      url: createUrlDto.originalUrl,
+      shortUrl: shortUrl,
+      clicks: 0,
+      userId: createUrlDto.userId,
+    });
+  }
 
-    async findUrl(shortUrl: string): Promise<string> {
-        const urls = await this.UrlModel.findOne({shortUrl: shortUrl}).exec();
-        if (!urls) {
-            throw new NotFoundException("The url not found")
-        }
-        urls.clicks++;
-        await urls.save();
-        return urls.url;
+  async findUrl(shortUrl: string): Promise<string> {
+    const urls = await this.UrlModel.findOne({ shortUrl: shortUrl }).exec();
+    if (!urls) {
+      throw new NotFoundException('The url not found');
     }
+    urls.clicks++;
+    await urls.save();
+    return urls.url;
+  }
 
-    async getAllUsersUrL(userId: string, pages: number): Promise<any> {
-        const urls = await this.UrlModel
-            .find({userId})
-            .sort({createdAt: -1})
-            .skip(pages * 10)
-            .limit(10)
-            .exec();
-        const total = await this.UrlModel.find({userId}).countDocuments().exec();
-        if (!urls) {
-            throw new NotFoundException("The url not found")
-        }
-        return {
-            total: total,
-            urls: urls.map((url) => ({
-                url:url.url,
-                shortUrl: url.shortUrl,
-                clicks:url.clicks
-        }))}
+  async getAllUsersUrL(userId: string, pages: number): Promise<any> {
+    const urls = await this.UrlModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(pages * 10)
+      .limit(10)
+      .exec();
+    const total = await this.UrlModel.find({ userId }).countDocuments().exec();
+    if (!urls) {
+      throw new NotFoundException('The url not found');
     }
+    return {
+      total: total,
+      urls: urls.map((url) => ({
+        url: url.url,
+        shortUrl: url.shortUrl,
+        clicks: url.clicks,
+      })),
+    };
+  }
 
-    async deleteUrl(shortUrl: string) {
-        await this.UrlModel.deleteOne({shortUrl: shortUrl})
-    }
+  async deleteUrl(shortUrl: string) {
+    await this.UrlModel.deleteOne({ shortUrl: shortUrl });
+  }
 }

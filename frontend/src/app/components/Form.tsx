@@ -6,15 +6,14 @@ type FormProps = {
   formComponents: JSX.Element[];
   form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any>;
   submitButtonText: string;
-  className: {formClassName: string,
-              submitButtonClassName: string}
+  className: { formClassName: string; submitButtonClassName: string };
 };
 
 export default function Form({
   formComponents,
   form,
   submitButtonText,
-  className
+  className,
 }: FormProps) {
   return (
     <form
@@ -26,7 +25,10 @@ export default function Form({
       }}
     >
       {formComponents}
-      <SubmitButton className={className?.submitButtonClassName} text={submitButtonText} />
+      <SubmitButton
+        className={className?.submitButtonClassName}
+        text={submitButtonText}
+      />
     </form>
   );
 }

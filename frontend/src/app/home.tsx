@@ -23,7 +23,6 @@ type Links = {
   urls: Link[];
 };
 
-
 export default function Home({ data }: { data: Links }) {
   const [links, setLinks] = useState<Link[]>(data.urls);
   const [total, setTotal] = useState<number>(data.total);
@@ -32,7 +31,6 @@ export default function Home({ data }: { data: Links }) {
   const signUpRef = useRef<HTMLElement>(null);
   const loginRef = useRef<HTMLElement>(null);
   const [userId, setUserId] = useState<string | undefined>();
-
 
   const handleSignUpForm = () => {
     if (signUpRef.current) {
@@ -61,14 +59,14 @@ export default function Home({ data }: { data: Links }) {
     setTotal((prev) => prev - 1);
     await axios({
       method: "delete",
-      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`
+      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`,
     })
       .then(() => toast.success("Successfully deleted"))
       .catch((e) => toast.error("Error" + e));
     setPage(page);
     const res = await axios({
       method: "get",
-      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`
+      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`,
     });
     setLinks(res.data.urls);
   }
@@ -78,11 +76,10 @@ export default function Home({ data }: { data: Links }) {
     const res = await axios({
       method: "get",
       url:
-        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`
+        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`,
     });
     setLinks(res.data.urls);
   }
-
 
   const linkComponents = links.map((link, i) => {
     return (
@@ -127,7 +124,12 @@ export default function Home({ data }: { data: Links }) {
       >
         Link Shortener{" "}
       </h1>
-      <UrlShortSection page={page} setLinks={setLinks} setTotal={setTotal} userId={userId} />
+      <UrlShortSection
+        page={page}
+        setLinks={setLinks}
+        setTotal={setTotal}
+        userId={userId}
+      />
       <section className={"flex flex-col gap-2"}>
         <PagComp
           currentItems={linkComponents}

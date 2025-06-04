@@ -1,7 +1,7 @@
-import {IsUrl} from "class-validator";
+import { IsUrl } from 'class-validator';
 
 export class CreateUrlDto {
-    @IsUrl()
-    originalUrl: string;
-    userId:string
+  @IsUrl()
+  originalUrl: string;
+  userId: string;
 }
