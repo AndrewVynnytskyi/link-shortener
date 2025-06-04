@@ -4,9 +4,11 @@ import CloseButton from "@/app/components/CloseButton";
 export default function Overlay({
   children,
   ref,
+  className
 }: {
   children: React.ReactNode;
   ref: RefObject<any>;
+  className: string
 }) {
   return (
     <div
@@ -17,7 +19,7 @@ export default function Overlay({
     >
       <div
         className={
-          "relative z-20 flex flex-col items-center justify-center rounded-md bg-white p-4 opacity-100"
+          `relative z-20 flex flex-col items-center justify-center rounded-md bg-white p-4 opacity-100 ${className}`
         }
       >
         <CloseButton ref={ref} />

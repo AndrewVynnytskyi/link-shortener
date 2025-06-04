@@ -39,10 +39,10 @@ export default function InputField({
   className
 }: TextFieldProps) {
   const error =
-    field.state.meta.isDirty && field.state.meta.errors?.[0]?.message;
+    !field.state.meta.isDefaultValue && field.state.meta.errors?.[0]?.message;
 
   return (
-    <section className={`${className?.sectionClassName} items-start relative flex flex-col  justify-center  ${!error && 'mb-9'}`}>
+    <section className={`${className?.sectionClassName} items-start relative flex flex-col  justify-center  ${!error && className?.errorClassName}`}>
       <input
         type={type}
         className={
@@ -57,7 +57,7 @@ export default function InputField({
         required
       />
       {error && (
-        <p className={`${className?.errorClassName} m-0 text-[8px] text-red-500`}>! {error}</p>
+        <p className={`m-0 text-[8px] text-red-500`}>! {error}</p>
       )}
     </section>
   );

@@ -72,7 +72,7 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
           <InputField className={{
             sectionClassName: "w-4/5 pt-3 mb-6",
             inputClassName: "w-full rounded-l-md mt-6 mr-0 ml-0",
-            errorClassName: ""
+            errorClassName: "mb-9"
           }} field={field} placeholder={placeholder} type={type} />
         )}
       </form.Field>
@@ -89,7 +89,10 @@ export default function UrlShortSection({ userId, page, setLinks, setTotal }: Ur
         Paste the URL to be shortened
       </h2>
       <Form
-        className={"flex flex-row items-center justify-center "}
+        className={{
+          formClassName: "flex flex-row items-center justify-center ",
+          submitButtonClassName: "rounded-r-md"
+        }}
         formComponents={urlFormComponents}
         form={form}
         submitButtonText={"Shorten Url"}

@@ -6,7 +6,8 @@ type FormProps = {
   formComponents: JSX.Element[];
   form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any>;
   submitButtonText: string;
-  className: string
+  className: {formClassName: string,
+              submitButtonClassName: string}
 };
 
 export default function Form({
@@ -17,7 +18,7 @@ export default function Form({
 }: FormProps) {
   return (
     <form
-      className={className}
+      className={className?.formClassName}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -25,7 +26,7 @@ export default function Form({
       }}
     >
       {formComponents}
-      <SubmitButton text={submitButtonText} />
+      <SubmitButton className={className?.submitButtonClassName} text={submitButtonText} />
     </form>
   );
 }

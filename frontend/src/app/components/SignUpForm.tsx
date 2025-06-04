@@ -19,7 +19,7 @@ export default function SignUpForm({ ref }: { ref: RefObject<any> }) {
       username: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      confirmPassword: ""
     },
     validators: {
       onChange: z
@@ -33,23 +33,23 @@ export default function SignUpForm({ ref }: { ref: RefObject<any> }) {
             .min(8, "Password must be at least 8 characters long")
             .regex(
               /[a-z]/,
-              "Password must contain at least one lowercase letter",
+              "Password must contain at least one lowercase letter"
             )
             .regex(
               /[A-Z]/,
-              "Password must contain at least one uppercase letter",
+              "Password must contain at least one uppercase letter"
             )
             .regex(/\d/, "Password must contain at least one number")
             .regex(
               /[^A-Za-z0-9]/,
-              "Password must contain at least one special character",
+              "Password must contain at least one special character"
             ),
-          confirmPassword: z.string(),
+          confirmPassword: z.string()
         })
         .refine((data) => data.password === data.confirmPassword, {
           message: "Passwords do not match",
-          path: ["confirmPassword"],
-        }),
+          path: ["confirmPassword"]
+        })
     },
 
     onSubmit: async ({ value }) => {
@@ -59,47 +59,59 @@ export default function SignUpForm({ ref }: { ref: RefObject<any> }) {
         data: {
           username: value.username,
           password: value.password,
-          email: value.email,
-        },
+          email: value.email
+        }
       })
         .then(() => {
           toast.success("You successfully singed up. Now please login");
         })
         .catch((e) => toast.error("Error: " + e.response.data.message));
-    },
+    }
   });
 
   const formData: {
     name: SignUpFormFieldNames;
     placeholder: string;
     type: string;
+    description: string
   }[] = [
-    { name: "username", placeholder: "Enter your username", type: "text" },
-    { name: "email", placeholder: "Enter your email", type: "email" },
-    { name: "password", placeholder: "Enter your password", type: "password" },
+    { name: "username", placeholder: "Enter your username", type: "text", description: "Username"  },
+    { name: "email", placeholder: "Enter your email", type: "email", description: "Email" },
+    { name: "password", placeholder: "Enter your password", type: "password", description: "Password" },
     {
       name: "confirmPassword",
       placeholder: "Confirm your password",
       type: "password",
-    },
+      description: "Confirm password"
+    }
   ];
 
-  const SignUpFormComponents = formData.map(({ name, placeholder, type }) => (
+  const SignUpFormComponents = formData.map(({ name, placeholder, type, description }) => (
     <form.Field key={name} name={name}>
       {(field) => (
-        <InputField field={field} placeholder={placeholder} type={type} />
+        <>
+          <p className={"m-2 text-center text-lg text-gray-500 mb-0 "}>{description}</p>
+          <InputField className={{
+            sectionClassName: "w-full",
+            inputClassName: "w-full rounded-md mr-0 ml-0",
+            errorClassName: "mb-3"
+          }} field={field} placeholder={placeholder} type={type} />
+        </>
       )}
     </form.Field>
   ));
 
   return (
-    <Overlay ref={ref}>
-      <h2>Sign Up</h2>
+    <Overlay className={"w-3/5"} ref={ref}>
+      <h2 className={"text-2xl m-6 font-bold text-blue-500 text-shadow-gray-300 text-shadow-sm"}>Sign Up</h2>
       <Form
         formComponents={SignUpFormComponents}
         form={form}
         submitButtonText={"Sign Up"}
-      />
+        className={{
+          formClassName: "  flex flex-col justify-center items-start w-4/5",
+          submitButtonClassName: "relative right-[-10%] rounded-md self-end mb-2"
+        }} />
     </Overlay>
   );
 }
