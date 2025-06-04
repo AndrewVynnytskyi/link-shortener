@@ -6,16 +6,18 @@ type FormProps = {
   formComponents: JSX.Element[];
   form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any>;
   submitButtonText: string;
+  className: string
 };
 
 export default function Form({
   formComponents,
   form,
   submitButtonText,
+  className
 }: FormProps) {
   return (
     <form
-      className={"flex flex-row items-center justify-center"}
+      className={className}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();

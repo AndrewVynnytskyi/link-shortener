@@ -2,18 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
 import axios from "axios";
 import { getCookie, setCookie } from "typescript-cookie";
 import { nanoid } from "nanoid";
 import { toast, Toaster } from "react-hot-toast";
 import LinkCard from "@/app/components/LinkCard";
 import PagComp from "@/app/components/PagComp";
-import Form from "@/app/components/Form";
-import InputField from "@/app/components/InputField";
-import { z } from "zod";
 import SignUpForm from "@/app/components/SignUpForm";
 import LoginForm from "@/app/components/LoginForm";
+import UrlShortSection from "@/app/components/UrlShortSection";
 
 type Link = {
   url: string;
@@ -26,7 +23,6 @@ type Links = {
   urls: Link[];
 };
 
-type UrlFormFieldsName = "link";
 
 export default function Home({ data }: { data: Links }) {
   const [links, setLinks] = useState<Link[]>(data.urls);
@@ -36,43 +32,7 @@ export default function Home({ data }: { data: Links }) {
   const signUpRef = useRef<HTMLElement>(null);
   const loginRef = useRef<HTMLElement>(null);
   const [userId, setUserId] = useState<string | undefined>();
-  const form = useForm({
-    defaultValues: {
-      link: "",
-    },
-    validators: {
-      onChange: z.object({
-        link: z.string().url("You have to paste valid url"),
-      }),
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        const res = await axios({
-          method: "POST",
-          url: process.env.NEXT_PUBLIC_API_KEY,
-          data: {
-            originalUrl: value.link,
-            userId: userId,
-          },
-        });
 
-        console.log(res.data);
-        if (page === 0) {
-          setLinks((prev) => [
-            {
-              url: res.data.url,
-              shortUrl: res.data.shortUrl,
-              clicks: res.data.clicks,
-            },
-            ...prev,
-          ]);
-        }
-        setTotal((prev) => prev + 1);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-  });
 
   const handleSignUpForm = () => {
     if (signUpRef.current) {
@@ -101,14 +61,14 @@ export default function Home({ data }: { data: Links }) {
     setTotal((prev) => prev - 1);
     await axios({
       method: "delete",
-      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`,
+      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`
     })
       .then(() => toast.success("Successfully deleted"))
       .catch((e) => toast.error("Error" + e));
     setPage(page);
     const res = await axios({
       method: "get",
-      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`,
+      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`
     });
     setLinks(res.data.urls);
   }
@@ -118,32 +78,11 @@ export default function Home({ data }: { data: Links }) {
     const res = await axios({
       method: "get",
       url:
-        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`,
+        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`
     });
     setLinks(res.data.urls);
   }
 
-  const urlFormData: {
-    name: UrlFormFieldsName;
-    placeholder: string;
-    type: string;
-  }[] = [
-    {
-      name: "link",
-      placeholder: "Enter the link here",
-      type: "url",
-    },
-  ];
-
-  const urlFormComponents = urlFormData.map(
-    ({ name, placeholder, type }, i) => (
-      <form.Field key={i} name={name}>
-        {(field) => (
-          <InputField field={field} placeholder={placeholder} type={type} />
-        )}
-      </form.Field>
-    ),
-  );
 
   const linkComponents = links.map((link, i) => {
     return (
@@ -188,20 +127,7 @@ export default function Home({ data }: { data: Links }) {
       >
         Link Shortener{" "}
       </h1>
-      <section
-        className={
-          "w-[750px] rounded-md bg-white p-2 shadow-xl shadow-gray-200"
-        }
-      >
-        <h2 className={"m-2 text-center text-3xl font-bold text-gray-500"}>
-          Paste the URL to be shortened
-        </h2>
-        <Form
-          formComponents={urlFormComponents}
-          form={form}
-          submitButtonText={"Shorten Url"}
-        />
-      </section>
+      <UrlShortSection page={page} setLinks={setLinks} setTotal={setTotal} userId={userId} />
       <section className={"flex flex-col gap-2"}>
         <PagComp
           currentItems={linkComponents}

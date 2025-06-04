@@ -24,22 +24,29 @@ type TextFieldProps = {
   >;
   placeholder: string;
   type: string;
+  className:{
+    sectionClassName:string,
+    inputClassName: string,
+    errorClassName: string
+  }
 };
+
 
 export default function InputField({
   field,
   placeholder,
   type,
+  className
 }: TextFieldProps) {
   const error =
     field.state.meta.isDirty && field.state.meta.errors?.[0]?.message;
 
   return (
-    <>
+    <section className={`${className?.sectionClassName} items-start relative flex flex-col  justify-center  ${!error && 'mb-9'}`}>
       <input
         type={type}
         className={
-          "m-6 mr-0 ml-0 h-14 w-4/5 rounded-l-md border border-gray-300 pl-4 placeholder:p-4"
+          `${className?.inputClassName} h-14 border border-gray-300 pl-4 placeholder:p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition`
         }
         name={field.name}
         id={field.name}
@@ -50,8 +57,8 @@ export default function InputField({
         required
       />
       {error && (
-        <p className={"relative left-0 text-[8px] text-red-500"}>! {error}</p>
+        <p className={`${className?.errorClassName} m-0 text-[8px] text-red-500`}>! {error}</p>
       )}
-    </>
+    </section>
   );
 }
