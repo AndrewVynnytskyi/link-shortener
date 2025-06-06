@@ -1,13 +1,9 @@
 import SubmitButton from "@/app/components/SubmitButton";
 import { JSX } from "react";
 import { ReactFormExtendedApi } from "@tanstack/react-form";
+import { FormProps } from "@/app/types/types";
 
-type FormProps = {
-  formComponents: JSX.Element[];
-  form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any>;
-  submitButtonText: string;
-  className: { formClassName: string; submitButtonClassName: string };
-};
+
 
 export default function Form({
   formComponents,

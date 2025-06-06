@@ -7,8 +7,9 @@ import { RefObject } from "react";
 import Form from "@/app/components/Form";
 import InputField from "@/app/components/InputField";
 import { toast } from "react-hot-toast";
+import { LoginFormFieldNames } from "@/app/types/types";
 
-type LoginFormFieldNames = "username" | "password";
+
 
 export default function LoginForm({ ref }: { ref: RefObject<any> }) {
   const router = useRouter();

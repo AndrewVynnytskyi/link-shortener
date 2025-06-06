@@ -1,35 +1,8 @@
 import { FieldApi } from "@tanstack/form-core";
+import { TextFieldProps } from "@/app/types/types";
 
-type TextFieldProps = {
-  field: FieldApi<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >;
-  placeholder: string;
-  type: string;
-  className: {
-    sectionClassName: string;
-    inputClassName: string;
-    errorClassName: string;
-  };
-};
+
+
 
 export default function InputField({
   field,

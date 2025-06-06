@@ -12,7 +12,7 @@ export default function QRCodeDisplay({
   displayQRCodeRef: RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <Overlay ref={displayQRCodeRef}>
+    <Overlay ref={displayQRCodeRef} className={""}>
       {src && <img src={src} alt={"QrCode"} />}
       <Link href={"http://localhost:3000" + shortenLink}>
         {"http://localhost:3000" + shortenLink}

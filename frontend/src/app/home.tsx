@@ -11,17 +11,13 @@ import PagComp from "@/app/components/PagComp";
 import SignUpForm from "@/app/components/SignUpForm";
 import LoginForm from "@/app/components/LoginForm";
 import UrlShortSection from "@/app/components/UrlShortSection";
+import { Link, Links } from "@/app/types/types";
+import InputField from "@/app/components/InputField";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
 
-type Link = {
-  url: string;
-  shortUrl: string;
-  clicks: number;
-};
+type UrlFormFieldsName = "link";
 
-type Links = {
-  total: number;
-  urls: Link[];
-};
 
 export default function Home({ data }: { data: Links }) {
   const [links, setLinks] = useState<Link[]>(data.urls);
@@ -44,6 +40,51 @@ export default function Home({ data }: { data: Links }) {
     }
   };
 
+  const form = useForm({
+    defaultValues: {
+      link: ""
+    },
+    validators: {
+      onChange: z.object({
+        link: z.string().url("You have to paste valid url")
+      })
+    },
+    onSubmit: async ({ value }) => {
+      handleFormSubmit(value);
+    }
+  });
+
+  const urlFormData: {
+    name: UrlFormFieldsName;
+    placeholder: string;
+    type: string;
+  }[] = [
+    {
+      name: "link",
+      placeholder: "Enter the link here",
+      type: "url"
+    }
+  ];
+
+  const urlFormComponents = urlFormData.map(
+    ({ name, placeholder, type }, i) => (
+      <form.Field key={i} name={name}>
+        {(field) => (
+          <InputField
+            className={{
+              sectionClassName: "mb-6 w-4/5 pt-3",
+              inputClassName: "mt-6 mr-0 ml-0 w-full rounded-l-md",
+              errorClassName: "mb-9"
+            }}
+            field={field}
+            placeholder={placeholder}
+            type={type}
+          />
+        )}
+      </form.Field>
+    )
+  );
+
   useEffect(() => {
     if (getCookie("userId")) {
       setUserId(getCookie("userId"));
@@ -59,14 +100,14 @@ export default function Home({ data }: { data: Links }) {
     setTotal((prev) => prev - 1);
     await axios({
       method: "delete",
-      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`,
+      url: process.env.NEXT_PUBLIC_API_KEY + `${shortenLink}`
     })
       .then(() => toast.success("Successfully deleted"))
       .catch((e) => toast.error("Error" + e));
     setPage(page);
     const res = await axios({
       method: "get",
-      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`,
+      url: process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${page}`
     });
     setLinks(res.data.urls);
   }
@@ -76,9 +117,37 @@ export default function Home({ data }: { data: Links }) {
     const res = await axios({
       method: "get",
       url:
-        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`,
+        process.env.NEXT_PUBLIC_API_KEY + `/user/${userId}/${event.selected}`
     });
     setLinks(res.data.urls);
+  }
+
+  async function handleFormSubmit(value: { link: string }) {
+    try {
+      const res = await axios({
+        method: "POST",
+        url: process.env.NEXT_PUBLIC_API_KEY + "/anon",
+        data: {
+          originalUrl: value.link,
+          shortUrl: () => nanoid(15),
+          userId: userId
+        }
+      });
+
+      if (page === 0) {
+        setLinks((prev: any) => [
+          {
+            url: res.data.url,
+            shortUrl: res.data.shortUrl,
+            clicks: res.data.clicks
+          },
+          ...prev
+        ]);
+      }
+      setTotal((prev: number) => prev + 1);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   const linkComponents = links.map((link, i) => {
@@ -125,11 +194,9 @@ export default function Home({ data }: { data: Links }) {
         Link Shortener{" "}
       </h1>
       <UrlShortSection
-        page={page}
-        setLinks={setLinks}
-        setTotal={setTotal}
-        userId={userId}
-      />
+        urlFormComponents={urlFormComponents}
+        form={form}
+        sectionText={"Paste the URL to be shortened"} />
       <section className={"flex flex-col gap-2"}>
         <PagComp
           currentItems={linkComponents}

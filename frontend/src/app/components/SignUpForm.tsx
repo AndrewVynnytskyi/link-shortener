@@ -6,12 +6,9 @@ import { RefObject } from "react";
 import InputField from "@/app/components/InputField";
 import Form from "@/app/components/Form";
 import Overlay from "@/app/components/Overlay";
+import { SignUpFormFieldNames } from "@/app/types/types";
 
-type SignUpFormFieldNames =
-  | "username"
-  | "email"
-  | "password"
-  | "confirmPassword";
+
 
 export default function SignUpForm({ ref }: { ref: RefObject<any> }) {
   const form = useForm({
