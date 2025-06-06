@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UrlModule } from './urls/url.module';
 import * as dotenv from 'dotenv';
 import { AuthModule } from './auths/auth.module';
+import { InformationModule } from "./information/information.module";
 
 dotenv.config();
 
@@ -12,6 +13,6 @@ if (!DATABASE_URL) {
 }
 
 @Module({
-  imports: [MongooseModule.forRoot(DATABASE_URL), UrlModule, AuthModule],
+  imports: [MongooseModule.forRoot(DATABASE_URL), UrlModule, AuthModule, InformationModule],
 })
 export class AppModule {}

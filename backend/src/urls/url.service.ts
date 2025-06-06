@@ -11,14 +11,16 @@ export class UrlService {
   constructor(@InjectModel(Url.name) private UrlModel: Model<Url>) {}
 
   async createUrl(createUrlDto: CreateUrlDto): Promise<UrlDto> {
-    const shortUrl = nanoid(15);
+
     return await this.UrlModel.create({
       url: createUrlDto.originalUrl,
-      shortUrl: shortUrl,
+      shortUrl: createUrlDto.shortUrl,
       clicks: 0,
       userId: createUrlDto.userId,
     });
   }
+
+
 
   async findUrl(shortUrl: string): Promise<string> {
     const urls = await this.UrlModel.findOne({ shortUrl: shortUrl }).exec();
