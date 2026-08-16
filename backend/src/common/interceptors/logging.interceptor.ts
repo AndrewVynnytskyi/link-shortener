@@ -1,0 +1,37 @@
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  NestInterceptor,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { Observable, tap } from 'rxjs';
+
+/**
+ * Logs method, path, status code and latency for every request. Kept
+ * intentionally small (no request/response bodies) so it is safe to run
+ * on every route, including auth endpoints, without leaking credentials
+ * into logs.
+ */
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  private readonly logger = new Logger('HTTP');
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const response = context.switchToHttp().getResponse<Response>();
+    const { method, originalUrl } = request;
+    const start = Date.now();
+
+    return next.handle().pipe(
+      tap(() => {
+        const { statusCode } = response;
+        const durationMs = Date.now() - start;
+        this.logger.log(
+          `${method} ${originalUrl} ${statusCode} +${durationMs}ms`,
+        );
+      }),
+    );
+  }
+}

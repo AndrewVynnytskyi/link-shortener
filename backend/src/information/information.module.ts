@@ -1,7 +1,5 @@
-import { Module } from "@nestjs/common";
-import { InformationController } from "./information.controller";
+import { Module } from '@nestjs/common';
+import { InformationController } from './information.controller';
 
-@Module({
-  controllers:[InformationController]
-})
-export class InformationModule{}
+@Module({ controllers: [InformationController] })
+export class InformationModule {}
