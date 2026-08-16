@@ -42,7 +42,7 @@ export function SignUpForm() {
     validators: { onChange: signUpSchema },
     onSubmit: async ({ value }) => {
       try {
-        await signup(value);
+        await signup({ username: value.username, email: value.email, password: value.password });
         toast.success("You're signed up! Please log in.");
         router.push("/login");
       } catch (error) {
