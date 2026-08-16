@@ -1,0 +1,52 @@
+name: link-shortener
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: mongodb://mongo:27017/link-shortener
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-2d}
+      # Browser-facing origin, used for the CORS allow-list.
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+      THROTTLE_TTL: ${THROTTLE_TTL:-60000}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-20}
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Baked in at build time and used both in the browser and for the
+        # server's own SSR fetches. Point it at a host-reachable address
+        # (not the internal "api" service name) so the browser can also
+        # reach it; SSR prefetches degrade gracefully to client-side
+        # fetching if the frontend container can't resolve it.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3001:3001"
+
+volumes:
+  mongo-data:

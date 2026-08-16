@@ -1,0 +1,15 @@
+{
+  "name": "link-shortener",
+  "private": true,
+  "description": "Convenience scripts that fan out into backend/ and frontend/. Each app also runs standalone from its own directory.",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run start:dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
+    "test": "npm --prefix backend run test",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  }
+}

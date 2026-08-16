@@ -1,35 +1,18 @@
-import { router } from "next/client";
 import { cookies } from "next/headers";
-import axios from "axios";
-import MyLinks from "@/app/my-links/MyLinks";
 import { redirect } from "next/navigation";
+import { MyLinksView } from "./MyLinksView";
 
-
-
+/**
+ * Server-guarded route: redirects to `/login` if no `jwt` cookie is
+ * present at all. The cookie's *validity* is still re-checked
+ * client-side via `useAuth`/`GET /auth/status`, since a cookie merely
+ * existing doesn't mean it's unexpired or unforged.
+ */
 export default async function Page() {
-
-  const cookieStorage = await cookies();
-
-  const jwtToken = cookieStorage.get("jwt-token");
-  if (!jwtToken) {
-    redirect("/");
+  const cookieStore = await cookies();
+  if (!cookieStore.get("jwt")) {
+    redirect("/login");
   }
 
-  try {
-    const res = await axios({
-        method: "get",
-        headers: {
-          Authorization: `Bearer ${jwtToken.value}`
-        },
-        url: process.env.NEXT_PUBLIC_API_KEY + "/logged-user/0"
-      }
-    );
-    console.log(res.data)
-    return <MyLinks data={res.data}/>
-  } catch (error) {
-    console.error(error);
-    redirect("/");
-  }
-
-
+  return <MyLinksView />;
 }
